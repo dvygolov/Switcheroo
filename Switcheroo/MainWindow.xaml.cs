@@ -31,11 +31,11 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ManagedWinapi;
 using ManagedWinapi.Windows;
+using Microsoft.Win32;
 using Switcheroo.Core;
 using Switcheroo.Core.Matchers;
 using Switcheroo.Properties;
@@ -67,6 +67,7 @@ namespace Switcheroo
         {
             InitializeComponent();
 
+            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             SetUpKeyBindings();
 
             SetUpNotifyIcon();
@@ -368,6 +369,14 @@ namespace Switcheroo
             _altTabAutoSwitch = false;
             Opacity = 0;
             Dispatcher.BeginInvoke(new Action(Hide), DispatcherPriority.Input);
+        }
+
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (nameof(Theme.Mode.System) == Settings.Default.Theme)
+            {
+                Theme.LoadTheme();
+            }
         }
 
         #endregion
