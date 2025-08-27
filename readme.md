@@ -12,6 +12,8 @@ you to quickly switch to any window by typing in just a few characters of its ti
 **Light and Dark mode**
 
 <img src="light.png" alt="Screenshot of Switcheroo in action" width="540px">
+
+
 <img src="dark.png" alt="Screenshot of Switcheroo in action" width="540px">
 
 Download
@@ -21,7 +23,7 @@ Download
 
 If you use [Chocolatey](https://chocolatey.org), Switcheroo can be installed with `choco install switcheroo`.
 
-Download (light/dark)
+Download (light/dark/system)
 --------
 **[Download Switcheroo here](https://github.com/crar01/Switcheroo/releases)**
 

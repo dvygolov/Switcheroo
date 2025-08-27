@@ -7,8 +7,11 @@
         SizeToContent="WidthAndHeight"
         Title="" MinWidth="542" Deactivated="MainWindow_OnLostFocus" Loaded="MainWindow_OnLoaded"
         BorderThickness="1" 
+        Background="Transparent"
        >
-
+    <Window.Effect>
+        <DropShadowEffect Color="Gray" BlurRadius="5" Direction="-90" ShadowDepth="0"/>
+    </Window.Effect>
     <Window.CommandBindings>
         <CommandBinding Command="local:MainWindow.CloseWindowCommand"
                         Executed="CloseWindow" />
@@ -34,7 +37,7 @@
         <local:WindowHandleToCachedIconConverter x:Key="WindowHandleToCachedIconConverter" />
     </Window.Resources>
 
-    <Border Padding="3" Background="White" BorderBrush="DarkGray" BorderThickness="1" Name="Border">
+    <Border CornerRadius="5" Padding="3" Background="White" BorderBrush="DarkGray" BorderThickness="0" Name="Border" Margin="15,15,15,15">
         <DockPanel LastChildFill="True">
             <DockPanel Margin="4,0,4,0" Name="HelpPanel" Background="Transparent" Height="0" DockPanel.Dock="Top">
                 <TextBlock FontSize="10" DockPanel.Dock="Left">
@@ -69,7 +72,7 @@
             </DockPanel>
             <Grid x:Name="GridMain" DockPanel.Dock="Top">
                 <TextBox Name="txtSearch" Padding="5" VerticalAlignment="Top" TextChanged="TextChanged" FontSize="15"
-                         VerticalContentAlignment="Center" BorderBrush="{x:Null}">
+                         VerticalContentAlignment="Center" BorderBrush="{x:Null}" BorderThickness="0">
                     <TextBox.InputBindings>
                         <!-- For now, leave these here.  Would it be better to route them upward? -->
                         <KeyBinding Command="local:MainWindow.ScrollListUpCommand" Key="Up" />
@@ -161,7 +164,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="390" />
+                                    <ColumnDefinition Width="375" />
                                     <ColumnDefinition Width="105" />
                                 </Grid.ColumnDefinitions>
                                 <Image Height="19" Grid.Row="0" Grid.Column="0" Margin="3,0"

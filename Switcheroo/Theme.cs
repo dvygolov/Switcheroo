@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Microsoft.Win32;
 using Switcheroo.Properties;
 
 namespace Switcheroo
@@ -15,10 +16,11 @@ namespace Switcheroo
         private static SolidColorBrush Foreground;
         private static MainWindow mainWindow;
 
-        private enum Mode
+        public enum Mode
         {
             Light,
-            Dark
+            Dark,
+            System
         }
 
         public static void SuscribeWindow(MainWindow main)
@@ -29,22 +31,76 @@ namespace Switcheroo
         public static void LoadTheme()
         {
             Mode mode;
-            Enum.TryParse(Settings.Default.Theme, out mode);
+
+            mode = GetThemeModeFromSettings();
+
             switch (mode)
             {
                 case Mode.Light:
-                    Background = new SolidColorBrush(Color.FromRgb(248, 248, 248));
-                    Foreground = new SolidColorBrush(Color.FromRgb(0,0,0));
+                    SetLightTheme();
                     break;
                 case Mode.Dark:
-                    Background = new SolidColorBrush(Color.FromRgb(30, 30, 30));
-                    Foreground = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+                    SetDarkTheme();
+                    break;
+                case Mode.System:
+                    if (IsSystemInDarkMode())
+                    {
+                        SetDarkTheme();
+                    }
+                    else
+                    {
+                        SetLightTheme();
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
 
             SetUpTheme();
+        }
+
+        private static void SetDarkTheme()
+        {
+            Background = new SolidColorBrush(Color.FromRgb(30, 30, 30));
+            Foreground = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+        }
+
+        private static void SetLightTheme()
+        {
+            Background = new SolidColorBrush(Color.FromRgb(248, 248, 248));
+            Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+        }
+
+        private static Mode GetThemeModeFromSettings()
+        {
+            Mode mode;
+            if (!Enum.TryParse(Settings.Default.Theme, out mode))
+            {
+                mode = Mode.Light;
+            }
+
+            return mode;
+        }
+
+        public static bool IsSystemInDarkMode()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(
+                    "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"))
+                {
+                    if (key != null)
+                    {
+                        object value = key.GetValue("AppsUseLightTheme");
+                        if (value != null && value is int)
+                        {
+                            return ((int)value) == 0; // 0 = dark, 1 = light
+                        }
+                    }
+                }
+            }
+            catch { }
+            return false;
         }
 
         private static void SetUpTheme()
