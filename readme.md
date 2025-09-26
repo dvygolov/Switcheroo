@@ -4,6 +4,7 @@
 Switcheroo is for anyone who spends more time using a keyboard than a mouse.
 Instead of alt-tabbing through a (long) list of open windows, Switcheroo allows
 you to quickly switch to any window by typing in just a few characters of its title.
+Supports work with multiple monitors: Switcheroo shows its UI on tht monitor where the user's cursor is.
 
 ## Screenshots
 
@@ -92,3 +93,4 @@ Switcheroo makes use of these great open source projects:
 
 * [Managed Windows API](http://mwinapi.sourceforge.net), Copyright © 2006 Michael Schier, GNU Lesser General Public License (LGPL)
 * [PortableSettingsProvider](https://github.com/crdx/PortableSettingsProvider), Copyright © crdx, The MIT License (MIT)
+
