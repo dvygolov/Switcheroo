@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Switcheroo - The incremental-search task switcher for Windows.
  * http://www.switcheroo.io/
  * Copyright 2009, 2010 James Sulak
@@ -269,6 +269,14 @@ namespace Switcheroo
         /// </summary>
         private void LoadData(InitialFocus focus)
         {
+            LoadData(focus, null);
+        }
+
+        /// <summary>
+        /// Populates the window list with the current running windows.
+        /// </summary>
+        private void LoadData(InitialFocus focus, MonitorInfo monitor)
+        {
             _unfilteredWindowList = new WindowFinder().GetWindows().Select(window => new AppWindowViewModel(window)).ToList();
 
             var firstWindow = _unfilteredWindowList.FirstOrDefault();
@@ -300,7 +308,7 @@ namespace Switcheroo
 
             txtSearch.Clear();
             txtSearch.Focus();
-            CenterWindow();
+            CenterWindow(monitor);
             ScrollSelectedItemIntoView();
         }
 
@@ -332,16 +340,40 @@ namespace Switcheroo
         /// </summary>
         private void CenterWindow()
         {
-            // Reset height every time to ensure that resolution changes take effect
-            Border.MaxHeight = SystemParameters.PrimaryScreenHeight;
+            CenterWindow(null);
+        }
 
-            // Force a rendering before repositioning the window
-            SizeToContent = SizeToContent.Manual;
-            SizeToContent = SizeToContent.WidthAndHeight;
+        /// <summary>
+        /// Place the Switcheroo window in the center of the specified monitor, or primary screen if monitor is null
+        /// </summary>
+        private void CenterWindow(MonitorInfo monitor)
+        {
+            if (monitor == null)
+            {
+                // Fallback to primary screen behavior
+                Border.MaxHeight = SystemParameters.PrimaryScreenHeight;
 
-            // Position the window in the center of the screen
-            Left = (SystemParameters.PrimaryScreenWidth/2) - (ActualWidth/2);
-            Top = (SystemParameters.PrimaryScreenHeight/2) - (ActualHeight/2);
+                // Force a rendering before repositioning the window
+                SizeToContent = SizeToContent.Manual;
+                SizeToContent = SizeToContent.WidthAndHeight;
+
+                // Position the window in the center of the primary screen
+                Left = (SystemParameters.PrimaryScreenWidth/2) - (ActualWidth/2);
+                Top = (SystemParameters.PrimaryScreenHeight/2) - (ActualHeight/2);
+            }
+            else
+            {
+                // Use the specified monitor with DPI scaling
+                Border.MaxHeight = monitor.WpfWorkAreaHeight;
+
+                // Force a rendering before repositioning the window
+                SizeToContent = SizeToContent.Manual;
+                SizeToContent = SizeToContent.WidthAndHeight;
+
+                // Position the window in the center of the specified monitor using WPF coordinates
+                Left = monitor.WpfWorkAreaLeft + (monitor.WpfWorkAreaWidth/2) - (ActualWidth/2);
+                Top = monitor.WpfWorkAreaTop + (monitor.WpfWorkAreaHeight/2) - (ActualHeight/2);
+            }
         }
 
         /// <summary>
@@ -462,10 +494,14 @@ namespace Switcheroo
                 txtSearch.IsEnabled = true;
 
                 _foregroundWindow = SystemWindow.ForegroundWindow;
+                
+                // Get the monitor where the mouse cursor is located
+                var cursorMonitor = MonitorHelper.GetMonitorFromCursor();
+                
                 Show();
                 Activate();
                 Keyboard.Focus(txtSearch);
-                LoadData(InitialFocus.NextItem);
+                LoadData(InitialFocus.NextItem, cursorMonitor);
                 Opacity = 1;
             }
             else
